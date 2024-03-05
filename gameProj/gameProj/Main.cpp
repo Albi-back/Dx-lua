@@ -45,7 +45,12 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 1;
 
     g_game = std::make_unique<Game>();
-
+    lua_State* L = luaL_newstate();
+    luaL_openlibs(L);
+    if (!LuaOk(L, luaL_dofile(L, "LuaScript.lua")))
+    {
+        assert(false);
+    }
     // Register class and create window
     {
         // Register class
@@ -104,7 +109,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     g_game.reset();
-
+    lua_close(L);
+    return 0;
     CoUninitialize();
 
     return static_cast<int>(msg.wParam);

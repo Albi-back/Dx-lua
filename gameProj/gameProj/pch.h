@@ -25,6 +25,7 @@
 #include "VertexTypes.h"
 #include "WICTextureLoader.h"
 #include <winsdkver.h>
+#include <LuaHelper.h>
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0601
 #endif

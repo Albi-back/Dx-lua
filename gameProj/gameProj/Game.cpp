@@ -7,6 +7,8 @@
 #include <SpriteBatch.h>
 #include <CommonStates.h>
 #include "AnimatedTexture.h"
+#include "LuaHelper.h"
+
 
 extern void ExitGame() noexcept;
 
@@ -32,9 +34,15 @@ Game::Game() noexcept(false)
 void Game::Initialize(HWND window, int width, int height)
 {
     m_deviceResources->SetWindow(window, width, height);
-
+    lua_State* L = luaL_newstate();
+    luaL_openlibs(L);
+    if (!LuaOk(L, luaL_dofile(L, "LuaScript.lua")))
+    {
+        assert(false);
+    }
+    
     m_deviceResources->CreateDeviceResources();
-    CreateDeviceDependentResources();
+    CreateDeviceDependentResources(L);
 
     m_deviceResources->CreateWindowSizeDependentResources();
     CreateWindowSizeDependentResources();
@@ -215,7 +223,7 @@ void Game::GetDefaultSize(int& width, int& height) const noexcept
 
 #pragma region Direct3D Resources
 // These are the resources that depend on the device.
-void Game::CreateDeviceDependentResources()
+void Game::CreateDeviceDependentResources( lua_State* L)
 {
     auto device = m_deviceResources->GetD3DDevice();
     m_graphicsMemory = make_unique<GraphicsMemory>(device);
@@ -233,8 +241,11 @@ void Game::CreateDeviceDependentResources()
     DX::ThrowIfFailed(
         CreateWICTextureFromFile(device, L"starfield.png", nullptr,
             m_background.ReleaseAndGetAddressOf()));
+    std::string myfile = LuaGetStr(L, "playerSprite");
+    wstring mywstring = std::wstring(myfile.begin(), myfile.end());
+    const wchar_t* mychar = mywstring.c_str();
     DX::ThrowIfFailed(
-        CreateWICTextureFromFile(device, L"shipanimated.png",
+        CreateWICTextureFromFile(device,mychar,
         nullptr, m_texture.ReleaseAndGetAddressOf()));
     DX::ThrowIfFailed(
         CreateWICTextureFromFile(device, L"Bullet.png",
@@ -279,11 +290,19 @@ void Game::OnDeviceLost()
     m_background.Reset();
     m_stars.reset();
     // TODO: Add Direct3D resource cleanup here.
+    
+    
 }
 
 void Game::OnDeviceRestored()
 {
-    CreateDeviceDependentResources();
+    lua_State* L = luaL_newstate();
+    luaL_openlibs(L);
+    if (!LuaOk(L, luaL_dofile(L, "LuaScript.lua")))
+    {
+        assert(false);
+    }
+    CreateDeviceDependentResources(L);
 
     CreateWindowSizeDependentResources();
 }

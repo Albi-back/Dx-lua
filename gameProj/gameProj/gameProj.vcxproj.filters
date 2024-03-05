@@ -34,6 +34,9 @@
     <ClCompile Include="DeviceResources.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="LuaHelper.cpp">
+      <Filter>Lua scripts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -65,5 +68,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Script.lua">
+      <Filter>Lua scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

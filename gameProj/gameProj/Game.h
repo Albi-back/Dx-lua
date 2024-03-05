@@ -9,6 +9,7 @@
 #include <CommonStates.h>
 #include "AnimatedTexture.h"
 #include "ScrollingBackground.h"
+#include "LuaHelper.h"
 using namespace std;
 
 // A basic game implementation that creates a D3D11 device and
@@ -56,7 +57,7 @@ private:
 
     void Clear();
 
-    void CreateDeviceDependentResources();
+    void CreateDeviceDependentResources(lua_State*);
     void CreateWindowSizeDependentResources();
     void shoot();
     // Device resources.
